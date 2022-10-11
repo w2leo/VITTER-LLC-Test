@@ -1,21 +1,22 @@
 fileFormatVersion: 2
-guid: f690832c8ccd4473f8706a75e806532c
-timeCreated: 1484582884
-licenseType: Free
+guid: a7613093fccf002409774f2355466c02
 TrueTypeFontImporter:
+  externalObjects: {}
   serializedVersion: 4
   fontSize: 16
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: ObelixPro
   fontNames:
-  - ObelixPro
-  fallbackFontReferences: []
+  - Alegreya
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 837ef25ec97e1a34badcdb4d1f7ccfc2, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
   userData: 
   assetBundleName: 
   assetBundleVariant: 
