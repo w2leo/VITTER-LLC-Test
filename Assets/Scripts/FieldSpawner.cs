@@ -55,16 +55,16 @@ public class FieldSpawner : MonoBehaviour
         }
     }
 
-    private PocketCell FindFirstEmptyPocketCell()
+    public bool SetCubeToField(int x, int y, GameCube cube)
     {
-        foreach (var pocketCell in pocketCells)
+        if (CheckCellIsEmpty(x, y))
         {
-            if (pocketCell.IsEmpty)
-            {
-                return pocketCell;
-            }
+            playField[x, y] = 1;
+            cube.SetPosition(GetNewCubePosition(x, y));
+            cube.ChangeMoveState(false);
+            return true;
         }
-        return null;
+        return false;
     }
 
     public bool CheckAnswer()
@@ -80,6 +80,18 @@ public class FieldSpawner : MonoBehaviour
             }
         }
         return true;
+    }
+
+    private PocketCell FindFirstEmptyPocketCell()
+    {
+        foreach (var pocketCell in pocketCells)
+        {
+            if (pocketCell.IsEmpty)
+            {
+                return pocketCell;
+            }
+        }
+        return null;
     }
 
     private void Awake()
@@ -155,20 +167,20 @@ public class FieldSpawner : MonoBehaviour
         }
     }
 
-    private GameCube DrawNewCube(Vector3 position, bool moveState)
+    private GameCube DrawNewCube(Vector2 position, bool moveState)
     {
         GameCube newCube = Instantiate(gameCubePrefab);
         newCube.transform.SetParent(playerCubes);
-        newCube.transform.position = position;
+        newCube.SetPosition(position);
         newCube.ChangeMoveState(moveState);
         return newCube;
     }
 
-    private Vector3 GetNewCubePosition(int x, int y)
+    private Vector2 GetNewCubePosition(int x, int y)
     {
         float baseX = firstSpawnPoint.position.x;
         float baseY = firstSpawnPoint.position.y;
-        return new Vector3(baseX + x, baseY - y, -1.0f);
+        return new Vector2(baseX + x, baseY - y);
     }
 
     private bool CheckCellIsEmpty(int x, int y)
@@ -176,17 +188,7 @@ public class FieldSpawner : MonoBehaviour
         return playField[x, y] == 0;
     }
 
-    public bool SetCubeToField(int x, int y, GameCube cube)
-    {
-        if (CheckCellIsEmpty(x, y))
-        {
-            playField[x, y] = 1;
-            cube.transform.position = GetNewCubePosition(x, y);
-            cube.ChangeMoveState(false);
-            return true;
-        }
-        return false;
-    }
+
 
     private void SpawnNewCubeInPocket()
     {

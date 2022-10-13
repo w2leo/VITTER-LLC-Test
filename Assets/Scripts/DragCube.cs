@@ -60,8 +60,9 @@ public class DragCube : MonoBehaviour
                 case TouchPhase.Moved:
                     if (cube != null && cube.CanMove)
                     {
-                        Vector2 pos = Camera.main.ScreenToWorldPoint(touch.position);
-                        cube.transform.position = pos;
+                        Vector2 position = Camera.main.ScreenToWorldPoint(touch.position);
+                        cube.SetPosition(position);
+                        
                     }
                     break;
 
@@ -90,13 +91,15 @@ public class DragCube : MonoBehaviour
                         {
                             oldPocket.TakeCube();
                             pocket.SetCube(cube);
-                            cube.transform.position = new Vector3(pocket.transform.position.x, pocket.transform.position.y, -1.0f);
+                            cube.SetPosition(pocket.transform.position.x, pocket.transform.position.y);
+                            cubeCollider.enabled = true; //Update Cube state
+                            cube.ChangeMoveState(true);
                         }
 
                         else
                         {
                             cubeCollider.enabled = true; //Update Cube state
-                            cube.transform.position = startPosition;
+                            cube.SetPosition(startPosition);
                             cube.ChangeMoveState(true);
                         }
                         cube = null;
