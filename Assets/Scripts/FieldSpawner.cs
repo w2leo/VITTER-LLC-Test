@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -156,25 +157,45 @@ public class FieldSpawner : MonoBehaviour
         }
     }
 
-    private void DrawNewCubeInField(int x, int y)
-    {
-        float baseX = firstSpawnPoint.position.x;
-        float baseY = firstSpawnPoint.position.y;
-        float baseZ = -1.0f;
-        Vector3 cellPosition = new Vector3(baseX + x, baseY - y, baseZ);
-        GameCube newCube = Instantiate(gameCubePrefab);
-        newCube.transform.SetParent(playerCubes);
-        newCube.transform.position = cellPosition;
-    }
+    //private void DrawNewCubeInField(int x, int y)
+    //{
+    //    float baseX = firstSpawnPoint.position.x;
+    //    float baseY = firstSpawnPoint.position.y;
+    //    float baseZ = -1.0f;
+    //    Vector3 cellPosition = new Vector3(baseX + x, baseY - y, baseZ);
 
-    private GameCube DrawNewCubeInPocket(Vector3 position)
+    //    GameCube newCube = Instantiate(gameCubePrefab);
+    //    newCube.transform.SetParent(playerCubes);
+    //    newCube.transform.position = cellPosition;
+    //    newCube.ChangeMoveState(false);
+    //}
+
+    //private GameCube DrawNewCubeInPocket(Vector3 position)
+    //{
+    //    position = new Vector3(position.x, position.y, -1.0f);
+
+    //    GameCube newCube = Instantiate(gameCubePrefab);
+    //    newCube.transform.SetParent(playerCubes);
+    //    newCube.transform.position = position;
+    //    newCube.ChangeMoveState(true);
+
+    //    return newCube;
+    //}
+
+    private GameCube DrawNewCube(Vector3 position, bool moveState)
     {
-        position = new Vector3(position.x, position.y, -1.0f);
         GameCube newCube = Instantiate(gameCubePrefab);
         newCube.transform.SetParent(playerCubes);
         newCube.transform.position = position;
-        newCube.ChangeMoveState(true);
+        newCube.ChangeMoveState(moveState);
         return newCube;
+    }
+
+    private Vector3 GetNewCubePosition(int x, int y)
+    {
+        float baseX = firstSpawnPoint.position.x;
+        float baseY = firstSpawnPoint.position.y;
+        return new Vector3(baseX + x, baseY - y, -1.0f);
     }
 
     private bool SetCubeToField(int x, int y)
@@ -186,7 +207,8 @@ public class FieldSpawner : MonoBehaviour
         }
         //Set cube to cell
         playField[x, y] = 1;
-        DrawNewCubeInField(x, y);
+        DrawNewCube(GetNewCubePosition(x, y), moveState: false);
+        //DrawNewCubeInField(x, y);
         return true;
     }
 
@@ -200,10 +222,7 @@ public class FieldSpawner : MonoBehaviour
         //Set cube to cell
         playField[x, y] = 1;
 
-        float baseX = firstSpawnPoint.position.x;
-        float baseY = firstSpawnPoint.position.y;
-        Vector2 cellPosition = new Vector2(baseX + x, baseY - y);
-        cube.transform.position = cellPosition;
+        cube.transform.position = GetNewCubePosition(x, y);
         cube.ChangeMoveState(false);
         return true;
     }
@@ -211,7 +230,7 @@ public class FieldSpawner : MonoBehaviour
     private void SpawnNewCubeInPocket()
     {
         PocketCell pocketCell = FindFirstEmptyPocketCell();
-        GameCube newCube = DrawNewCubeInPocket(pocketCell.transform.position);
+        GameCube newCube = DrawNewCube(pocketCell.transform.position, moveState: true);
         pocketCell.SetCube(newCube);
         spawnedCubes++;
     }
