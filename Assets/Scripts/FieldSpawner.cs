@@ -24,37 +24,6 @@ public class FieldSpawner : MonoBehaviour
 
     public int RemainCubesInField { get => CountCubesInField() - maxPlayerCubes; }
 
-    private int CountCubesInField()
-    {
-        int result = 0;
-        foreach (var e in playField)
-        {
-            if (e == 1)
-            {
-                result++;
-            }
-        }
-        return result;
-    }
-
-    private bool CheckPocketCellsEmpty()
-    {
-        bool result = false;
-        foreach (var pocketCell in pocketCells)
-        {
-            result |= pocketCell.IsEmpty;
-        }
-        return result;
-    }
-
-    private void Update()
-    {
-        if (fieldIninialized && RemainPlayerCubes > 0 && CheckPocketCellsEmpty())
-        {
-            SpawnNewCubeInPocket();
-        }
-    }
-
     public bool SetCubeToField(int x, int y, GameCube cube)
     {
         if (CheckCellIsEmpty(x, y))
@@ -80,6 +49,37 @@ public class FieldSpawner : MonoBehaviour
             }
         }
         return true;
+    }
+
+    private void Update()
+    {
+        if (fieldIninialized && RemainPlayerCubes > 0 && CheckPocketCellsEmpty())
+        {
+            SpawnNewCubeInPocket();
+        }
+    }
+
+    private int CountCubesInField()
+    {
+        int result = 0;
+        foreach (var e in playField)
+        {
+            if (e == 1)
+            {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    private bool CheckPocketCellsEmpty()
+    {
+        bool result = false;
+        foreach (var pocketCell in pocketCells)
+        {
+            result |= pocketCell.IsEmpty;
+        }
+        return result;
     }
 
     private PocketCell FindFirstEmptyPocketCell()
@@ -111,28 +111,24 @@ public class FieldSpawner : MonoBehaviour
 
     private void InitNewLevel() // Only for this task
     {
-        maxPlayerCubes = 3;
+        maxPlayerCubes = 3; 
         playField = new int[fieldSize, fieldSize] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
         answerField = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } };
         basicCubes = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 0, 0 }, { 0, 1, 0 } };
-
-        if (!CheckFieldInitialization(answerField))
-        {
-            throw new Exception("WRONG_INIT_EXCEPTION");
-        }
+        maxPlayerCubes = CountMaxCubes();
     }
 
-    private bool CheckFieldInitialization(int[,] fieldToCheclk)
+    private int CountMaxCubes()
     {
         int count = 0;
-        foreach (var e in fieldToCheclk)
+        foreach (var e in answerField)
         {
             if (e == 1)
             {
                 count++;
             }
         }
-        return count == maxPlayerCubes;
+        return count;
     }
 
     private void SpawnBasicCubes()
@@ -187,8 +183,6 @@ public class FieldSpawner : MonoBehaviour
     {
         return playField[x, y] == 0;
     }
-
-
 
     private void SpawnNewCubeInPocket()
     {

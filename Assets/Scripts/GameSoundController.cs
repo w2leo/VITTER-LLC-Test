@@ -11,6 +11,7 @@ public class GameSoundController : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI textUI;
     [SerializeField] GameObject mainAudioPrefab;
+
     private AudioSource mainAudioSource;
     private Slider slider;
 
@@ -29,6 +30,11 @@ public class GameSoundController : MonoBehaviour
     public void LoadVolumeData()
     {
         currentVolume = PlayerPrefs.GetFloat(volumeValue);
+    }
+
+    private void Awake()
+    {
+        StartSound();
     }
 
     private void ChangeVolume()
@@ -56,11 +62,6 @@ public class GameSoundController : MonoBehaviour
         }
         LoadVolumeData();
         SetVolume();
-    }
-
-    private void Awake()
-    {
-        StartSound();
     }
 
     private void OnDestroy()

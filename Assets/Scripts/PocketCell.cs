@@ -9,6 +9,11 @@ public class PocketCell : MonoBehaviour
 
     public bool IsEmpty { get => (GetCubeInfo() == null); }
 
+    public void TakeCube()
+    {
+        currentCube = null;
+    }
+
     private void Awake()
     {
         SetPocketScale();
@@ -25,11 +30,6 @@ public class PocketCell : MonoBehaviour
     private GameCube GetCubeInfo()
     {
         return currentCube;
-    }
-
-    public void TakeCube()
-    {
-        currentCube = null;
     }
 
     private void SetPocketScale()

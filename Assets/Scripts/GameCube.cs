@@ -4,8 +4,6 @@ public class GameCube : MonoBehaviour
 {
     private const float baseZ = -1.0f;
 
-    [SerializeField] private Collider2D collider2D;
-
     private bool canMove = false;
 
     public bool CanMove { get => canMove; }
@@ -13,7 +11,12 @@ public class GameCube : MonoBehaviour
     public void ChangeMoveState(bool state)
     {
         canMove = state;
-        collider2D.enabled = state;
+        ChangeColliderState(state);
+    }
+
+    public void ChangeColliderState(bool state)
+    {
+        GetComponent<Collider2D>().enabled = state;
     }
 
     public void SetPosition(Vector2 position)

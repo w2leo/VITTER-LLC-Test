@@ -21,12 +21,6 @@ public class DragCube : MonoBehaviour
     private Ray ray;
     private RaycastHit2D hit;
 
-    private void ActivateRaycast(Vector2 position)
-    {
-        ray = Camera.main.ScreenPointToRay(position);
-        hit = Physics2D.Raycast(ray.origin, ray.direction);
-    }
-
     private void Update()
     {
         if (Input.touchCount > 0)
@@ -36,81 +30,115 @@ public class DragCube : MonoBehaviour
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    ActivateRaycast(touch.position);
-
-                    if (hit.collider != null && hit.collider.gameObject.TryGetComponent<GameCube>(out cube))
-                    {
-                        startPosition = cube.transform.position;
-                        if (!cube.CanMove)
-                        {
-                            cube = null;
-                        }
-                        else
-                        {
-                            cube.GetComponent<Collider2D>().enabled = false;
-                            ActivateRaycast(touch.position);
-                            if (hit.collider != null)
-                            {
-                                hit.collider.gameObject.TryGetComponent<PocketCell>(out oldPocket);
-                            }
-                        }
-                    }
+                    StartTouchPhase(touch.position);
                     break;
 
                 case TouchPhase.Moved:
-                    if (cube != null && cube.CanMove)
-                    {
-                        Vector2 position = Camera.main.ScreenToWorldPoint(touch.position);
-                        cube.SetPosition(position);
-                        
-                    }
+                    MoveTouchPhase(touch.position);
                     break;
 
                 case TouchPhase.Ended:
-
-                    if (cube != null)
-                    {
-                        var cubeCollider = cube.gameObject.GetComponent<Collider2D>();
-                        cubeCollider.enabled = false; // Update Cube state
-
-                        ActivateRaycast(touch.position);
-
-                        // Try put to field
-                        if (hit.collider != null && hit.collider.gameObject.TryGetComponent<FieldCell>(out field) &&
-                            fieldSpawner.SetCubeToField(field.X, field.Y, cube))
-                        {
-                            oldPocket.TakeCube();
-                            if (fieldSpawner.RemainCubesInField == 0)
-                            {
-                                winPanel.ActivateEndGame(fieldSpawner.CheckAnswer());
-                            }
-                        }
-                        //Try put to pocket
-                        else if (hit.collider != null && hit.collider.gameObject.TryGetComponent<PocketCell>(out pocket) &&
-                            pocket.IsEmpty)
-                        {
-                            oldPocket.TakeCube();
-                            pocket.SetCube(cube);
-                            cube.SetPosition(pocket.transform.position.x, pocket.transform.position.y);
-                            cubeCollider.enabled = true; //Update Cube state
-                            cube.ChangeMoveState(true);
-                        }
-
-                        else
-                        {
-                            cubeCollider.enabled = true; //Update Cube state
-                            cube.SetPosition(startPosition);
-                            cube.ChangeMoveState(true);
-                        }
-                        cube = null;
-                    }
+                    EndTouchPhase(touch.position);
                     break;
             }
         }
     }
 
-    private void UpdateCubeState(GameCube cube, CubeState state)
+    private void StartTouchPhase(Vector2 touchPosition)
     {
-        // По стэйт менять cube
+        ActivateRaycast(touchPosition);
+        if (hit.collider != null && hit.collider.gameObject.TryGetComponent<GameCube>(out cube) && cube.CanMove)
+        {
+            startPosition = cube.transform.position;
+            cube.ChangeColliderState(false);
+            oldPocket = GetPocket(touchPosition);
+        }
+        else
+        {
+            cube = null;
+        }
+    }
+
+    private PocketCell GetPocket(Vector2 touchPosition)
+    {
+        PocketCell pocket = new PocketCell();
+        ActivateRaycast(touchPosition);
+        if (hit.collider != null)
+        {
+            hit.collider.gameObject.TryGetComponent<PocketCell>(out pocket);
+        }
+        return pocket;
+    }
+
+    private void MoveTouchPhase(Vector2 touchPosition)
+    {
+        if (cube != null && cube.CanMove)
+        {
+            Vector2 position = Camera.main.ScreenToWorldPoint(touchPosition);
+            cube.SetPosition(position);
+        }
+    }
+
+    private void EndTouchPhase(Vector2 touchPosition)
+    {
+        if (cube != null)
+        {
+            cube.ChangeMoveState(false);
+            ActivateRaycast(touchPosition);
+            if (TrySetInField())
+            {
+                return;
+            }
+            else if (TrySetInPocket())
+            {
+                return;
+            }
+            else
+            {
+                cube.SetPosition(startPosition);
+                cube.ChangeMoveState(true);
+            }
+            cube = null;
+        }
+    }
+
+    private bool TrySetInField()
+    {
+        if (hit.collider != null && hit.collider.gameObject.TryGetComponent<FieldCell>(out field) && fieldSpawner.SetCubeToField(field.X, field.Y, cube))
+        {
+            oldPocket.TakeCube();
+            if (fieldSpawner.RemainCubesInField == 0)
+            {
+                winPanel.ActivateEndGame(fieldSpawner.CheckAnswer());
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool TrySetInPocket()
+    {
+        if (hit.collider != null && hit.collider.gameObject.TryGetComponent<PocketCell>(out pocket) &&
+                 pocket.IsEmpty)
+        {
+            oldPocket.TakeCube();
+            pocket.SetCube(cube);
+            cube.SetPosition(pocket.transform.position.x, pocket.transform.position.y);
+            cube.ChangeMoveState(true);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void ActivateRaycast(Vector2 position)
+    {
+        ray = Camera.main.ScreenPointToRay(position);
+        hit = Physics2D.Raycast(ray.origin, ray.direction);
     }
 }

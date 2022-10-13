@@ -18,13 +18,6 @@ public class EndGamePanel : MonoBehaviour
         menuPanels.gameObject.SetActive(true);
         gameObject.SetActive(true);
         buttonClose.gameObject.SetActive(false);
-        if (state)
-        {
-            text.text = winState;
-        }
-        else
-        {
-            text.text = looseState;
-        }
+        text.text = state ? winState : looseState;
     }
 }
