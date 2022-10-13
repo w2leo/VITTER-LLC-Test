@@ -3,8 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class Buttons : MonoBehaviour
 {
-    public void LoadScene(UnityEditor.SceneAsset scene)
+    public void LoadScene(int sceneIndex)
     {
-        SceneManager.LoadScene(scene.name);      
+        SceneManager.LoadScene(sceneIndex);      
     }
 }

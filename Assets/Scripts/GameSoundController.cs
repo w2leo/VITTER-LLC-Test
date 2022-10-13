@@ -27,7 +27,7 @@ public class GameSoundController : MonoBehaviour
         mainAudioSource = Instantiate(mainAudioPrefab).GetComponent<AudioSource>();
     }
 
-    private void Awake()
+    public void StartSound()
     {
         if (!PlayerPrefs.HasKey(volumeValue))
         {
@@ -40,6 +40,11 @@ public class GameSoundController : MonoBehaviour
         }
         LoadVolumeData();
         SetVolume();
+    }
+
+    private void Awake()
+    {
+        StartSound();
     }
 
     private void OnDestroy()
