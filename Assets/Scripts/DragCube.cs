@@ -79,7 +79,7 @@ public class DragCube : MonoBehaviour
                             fieldSpawner.SetCubeToField(field.X, field.Y, cube))
                         {
                             oldPocket.TakeCube();
-                            if (fieldSpawner.RemainCubesToField == 0)
+                            if (fieldSpawner.RemainCubesInField == 0)
                             {
                                 winPanel.ActivateEndGame(fieldSpawner.CheckAnswer());
                             }
@@ -97,7 +97,7 @@ public class DragCube : MonoBehaviour
                         {
                             cubeCollider.enabled = true; //Update Cube state
                             cube.transform.position = startPosition;
-                            cube.CanMove = true;
+                            cube.ChangeMoveState(true);
                         }
                         cube = null;
                     }

@@ -11,7 +11,6 @@ public class FieldSpawner : MonoBehaviour
     [SerializeField] List<PocketCell> pocketCells;
 
     private FieldCell[,] fieldCells;
-
     private int[,] playField;
     private int[,] answerField;
     private int[,] basicCubes;
@@ -20,14 +19,9 @@ public class FieldSpawner : MonoBehaviour
     private const int fieldSize = 3;
     private bool fieldIninialized;
 
-    public int MaxPlayerCubes { get => maxPlayerCubes; }
+    public int RemainPlayerCubes { get => maxPlayerCubes - spawnedCubes; }
 
-    public int SpawnedPlayerCubes { get => spawnedCubes; }
-
-    public int RemainPlayerCubes { get => maxPlayerCubes - SpawnedPlayerCubes; }
-
-    public int RemainCubesToField { get => CountCubesInField() - maxPlayerCubes; }
-
+    public int RemainCubesInField { get => CountCubesInField() - maxPlayerCubes; }
 
     private int CountCubesInField()
     {
@@ -56,11 +50,7 @@ public class FieldSpawner : MonoBehaviour
     {
         if (fieldIninialized && RemainPlayerCubes > 0 && CheckPocketCellsEmpty())
         {
-            PocketCell pocketCell = FindFirstEmptyPocketCell();
-            GameCube newCube = DrawCube(pocketCell.transform.position);
-            newCube.CanMove = true;
-            pocketCell.SetCube(newCube);
-            spawnedCubes++;
+            SpawnNewCubeInPocket();
         }
     }
 
@@ -74,38 +64,6 @@ public class FieldSpawner : MonoBehaviour
             }
         }
         return null;
-    }
-    private bool SetCubeToField(int x, int y)
-    {
-        //Check cell is empty
-        if (playField[x, y] != 0)
-        {
-            return false;
-        }
-        //Set cube to cell
-        playField[x, y] = 1;
-        DrawCube(x, y);
-        fieldCells[x, y].SetCube();
-        return true;
-    }
-
-    public bool SetCubeToField(int x, int y, GameCube cube)
-    {
-        //Check cell is empty
-        if (playField[x, y] != 0)
-        {
-            return false;
-        }
-        //Set cube to cell
-        playField[x, y] = 1;
-
-        float baseX = firstSpawnPoint.position.x;
-        float baseY = firstSpawnPoint.position.y;
-        Vector2 cellPosition = new Vector2(baseX + x, baseY - y);
-        cube.transform.position = cellPosition;
-        cube.CanMove = false;
-        fieldCells[x, y].SetCube();
-        return true;
     }
 
     public bool CheckAnswer()
@@ -133,15 +91,14 @@ public class FieldSpawner : MonoBehaviour
 
     private void CreateLevel()
     {
-        BasicInitLevel();
+        InitNewLevel();
         DrawCells();
         SpawnBasicCubes();
-        spawnedCubes = CountSpawnedCubes();
     }
 
-    private void BasicInitLevel() // Only for this task
+    private void InitNewLevel() // Only for this task
     {
-        maxPlayerCubes = 3; 
+        maxPlayerCubes = 3;
         playField = new int[fieldSize, fieldSize] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
         answerField = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } };
         basicCubes = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 0, 0 }, { 0, 1, 0 } };
@@ -150,19 +107,6 @@ public class FieldSpawner : MonoBehaviour
         {
             throw new Exception("WRONG_INIT_EXCEPTION");
         }
-    }
-
-    private int CountSpawnedCubes()
-    {
-        int countCubes = 0;
-        foreach (var e in playField)
-        {
-            if (e == 1)
-            {
-                countCubes++;
-            }
-        }
-        return countCubes;
     }
 
     private bool CheckFieldInitialization(int[,] fieldToCheclk)
@@ -175,7 +119,7 @@ public class FieldSpawner : MonoBehaviour
                 count++;
             }
         }
-        return count == MaxPlayerCubes;
+        return count == maxPlayerCubes;
     }
 
     private void SpawnBasicCubes()
@@ -190,6 +134,7 @@ public class FieldSpawner : MonoBehaviour
                     {
                         throw new Exception("WRONG_INIT_EXCEPTION");
                     }
+                    spawnedCubes++;
                 }
             }
         }
@@ -211,7 +156,7 @@ public class FieldSpawner : MonoBehaviour
         }
     }
 
-    private void DrawCube(int x, int y)
+    private void DrawNewCubeInField(int x, int y)
     {
         float baseX = firstSpawnPoint.position.x;
         float baseY = firstSpawnPoint.position.y;
@@ -222,12 +167,52 @@ public class FieldSpawner : MonoBehaviour
         newCube.transform.position = cellPosition;
     }
 
-    private GameCube DrawCube(Vector3 position)
+    private GameCube DrawNewCubeInPocket(Vector3 position)
     {
         position = new Vector3(position.x, position.y, -1.0f);
         GameCube newCube = Instantiate(gameCubePrefab);
         newCube.transform.SetParent(playerCubes);
         newCube.transform.position = position;
+        newCube.ChangeMoveState(true);
         return newCube;
+    }
+
+    private bool SetCubeToField(int x, int y)
+    {
+        //Check cell is empty
+        if (playField[x, y] != 0)
+        {
+            return false;
+        }
+        //Set cube to cell
+        playField[x, y] = 1;
+        DrawNewCubeInField(x, y);
+        return true;
+    }
+
+    public bool SetCubeToField(int x, int y, GameCube cube)
+    {
+        //Check cell is empty
+        if (playField[x, y] != 0)
+        {
+            return false;
+        }
+        //Set cube to cell
+        playField[x, y] = 1;
+
+        float baseX = firstSpawnPoint.position.x;
+        float baseY = firstSpawnPoint.position.y;
+        Vector2 cellPosition = new Vector2(baseX + x, baseY - y);
+        cube.transform.position = cellPosition;
+        cube.ChangeMoveState(false);
+        return true;
+    }
+
+    private void SpawnNewCubeInPocket()
+    {
+        PocketCell pocketCell = FindFirstEmptyPocketCell();
+        GameCube newCube = DrawNewCubeInPocket(pocketCell.transform.position);
+        pocketCell.SetCube(newCube);
+        spawnedCubes++;
     }
 }

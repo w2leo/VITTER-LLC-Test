@@ -124,3 +124,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed573886bdb364444938574be32ce1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collider2D: {fileID: 621527015536534863}

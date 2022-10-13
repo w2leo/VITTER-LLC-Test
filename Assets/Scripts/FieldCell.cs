@@ -6,7 +6,6 @@ public class FieldCell : MonoBehaviour
 {
     private int x;
     private int y;
-    private bool isEmpty;
 
     public int X => x;
 
@@ -17,13 +16,7 @@ public class FieldCell : MonoBehaviour
         transform.SetParent(parent);
         transform.localPosition = position;
         gameObject.name = name;
-        isEmpty = true;
         this.x = x;
         this.y = y;
     }
-
-    public void SetCube()
-    {
-        isEmpty = false;
-    }   
 }

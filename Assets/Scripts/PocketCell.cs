@@ -1,16 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-enum PocketType
-{
-    Small,
-    Big
-}
 
 public class PocketCell : MonoBehaviour
 {
     [SerializeField] PocketType pocketType;
+    
     private const float bigPocketScale = 1.2f;
     private GameCube currentCube;
 
