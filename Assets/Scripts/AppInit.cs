@@ -15,12 +15,12 @@ public class AppInit : MonoBehaviour
 
     private void LoadData()
     {
-        // Load from player prefs
+        soundController.LoadVolumeData();
     }
 
     private void SaveData()
     {
-        // Save data to Player prefs
+        soundController.SaveVolumeData();
     }
 
     private void OnDestroy()

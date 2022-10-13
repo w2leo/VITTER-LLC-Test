@@ -16,12 +16,28 @@ public class GameSoundController : MonoBehaviour
 
     private float currentVolume;
 
-    public void ChangeVolume()
+    public void SaveVolumeData()
+    {
+        PlayerPrefs.SetFloat(volumeValue, currentVolume);
+    }
+
+    public void SaveVolumeData(float volume)
+    {
+        PlayerPrefs.SetFloat(volumeValue, volume);
+    }
+
+    public void LoadVolumeData()
+    {
+        currentVolume = PlayerPrefs.GetFloat(volumeValue);
+    }
+
+    private void ChangeVolume()
     {
         currentVolume = slider.value;
         mainAudioSource.volume = currentVolume;
         ChangeVolumeText();
     }
+
     private void CreateAudioSource()
     {
         mainAudioSource = Instantiate(mainAudioPrefab).GetComponent<AudioSource>();
@@ -62,20 +78,10 @@ public class GameSoundController : MonoBehaviour
         return false;
     }
 
-    private void LoadVolumeData()
-    {
-        currentVolume = PlayerPrefs.GetFloat(volumeValue);
-    }
-
     private void SetVolume()
     {
         slider.value = currentVolume;
         ChangeVolume();
-    }
-
-    private void SaveVolumeData(float volume)
-    {
-        PlayerPrefs.SetFloat(volumeValue, volume);
     }
 
     private void ChangeVolumeText()
