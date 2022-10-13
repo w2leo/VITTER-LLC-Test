@@ -1,26 +1,19 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
 public class GameSoundController : MonoBehaviour
 {
-    [Header("Constants")]
     private const string basicText = "Звук: *%";
     private const float basicVolume = 50.0f;
     private const string volumeValue = "Volume";
 
-    [Header("Components")]
     [SerializeField] TextMeshProUGUI textUI;
     [SerializeField] GameObject mainAudioPrefab;
     private AudioSource mainAudioSource;
     private Slider slider;
 
-    [Header("Fields")]
     private float currentVolume;
 
     public void ChangeVolume()
@@ -32,12 +25,6 @@ public class GameSoundController : MonoBehaviour
     private void CreateAudioSource()
     {
         mainAudioSource = Instantiate(mainAudioPrefab).GetComponent<AudioSource>();
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        LoadVolumeData();
-        SetVolume();
     }
 
     private void Awake()
