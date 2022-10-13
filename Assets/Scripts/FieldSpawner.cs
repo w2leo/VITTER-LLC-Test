@@ -131,10 +131,8 @@ public class FieldSpawner : MonoBehaviour
             {
                 if (basicCubes[x, y] == 1)
                 {
-                    if (!SetCubeToField(x, y))
-                    {
-                        throw new Exception("WRONG_INIT_EXCEPTION");
-                    }
+                    GameCube newCube = DrawNewCube(GetNewCubePosition(x, y), moveState: false);
+                    SetCubeToField(x, y, newCube);
                     spawnedCubes++;
                 }
             }
@@ -157,31 +155,6 @@ public class FieldSpawner : MonoBehaviour
         }
     }
 
-    //private void DrawNewCubeInField(int x, int y)
-    //{
-    //    float baseX = firstSpawnPoint.position.x;
-    //    float baseY = firstSpawnPoint.position.y;
-    //    float baseZ = -1.0f;
-    //    Vector3 cellPosition = new Vector3(baseX + x, baseY - y, baseZ);
-
-    //    GameCube newCube = Instantiate(gameCubePrefab);
-    //    newCube.transform.SetParent(playerCubes);
-    //    newCube.transform.position = cellPosition;
-    //    newCube.ChangeMoveState(false);
-    //}
-
-    //private GameCube DrawNewCubeInPocket(Vector3 position)
-    //{
-    //    position = new Vector3(position.x, position.y, -1.0f);
-
-    //    GameCube newCube = Instantiate(gameCubePrefab);
-    //    newCube.transform.SetParent(playerCubes);
-    //    newCube.transform.position = position;
-    //    newCube.ChangeMoveState(true);
-
-    //    return newCube;
-    //}
-
     private GameCube DrawNewCube(Vector3 position, bool moveState)
     {
         GameCube newCube = Instantiate(gameCubePrefab);
@@ -198,33 +171,21 @@ public class FieldSpawner : MonoBehaviour
         return new Vector3(baseX + x, baseY - y, -1.0f);
     }
 
-    private bool SetCubeToField(int x, int y)
+    private bool CheckCellIsEmpty(int x, int y)
     {
-        //Check cell is empty
-        if (playField[x, y] != 0)
-        {
-            return false;
-        }
-        //Set cube to cell
-        playField[x, y] = 1;
-        DrawNewCube(GetNewCubePosition(x, y), moveState: false);
-        //DrawNewCubeInField(x, y);
-        return true;
+        return playField[x, y] == 0;
     }
 
     public bool SetCubeToField(int x, int y, GameCube cube)
     {
-        //Check cell is empty
-        if (playField[x, y] != 0)
+        if (CheckCellIsEmpty(x, y))
         {
-            return false;
+            playField[x, y] = 1;
+            cube.transform.position = GetNewCubePosition(x, y);
+            cube.ChangeMoveState(false);
+            return true;
         }
-        //Set cube to cell
-        playField[x, y] = 1;
-
-        cube.transform.position = GetNewCubePosition(x, y);
-        cube.ChangeMoveState(false);
-        return true;
+        return false;
     }
 
     private void SpawnNewCubeInPocket()
