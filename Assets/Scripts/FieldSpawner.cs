@@ -141,9 +141,9 @@ public class FieldSpawner : MonoBehaviour
 
     private void BasicInitLevel() // Only for this task
     {
-        maxPlayerCubes = 5; // 3!!
+        maxPlayerCubes = 3; 
         playField = new int[fieldSize, fieldSize] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
-        answerField = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } }; // {0,1,0}
+        answerField = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } };
         basicCubes = new int[fieldSize, fieldSize] { { 0, 1, 0 }, { 0, 0, 0 }, { 0, 1, 0 } };
 
         if (!CheckFieldInitialization(answerField))
